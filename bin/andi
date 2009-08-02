@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+require File.expand_path( File.join(File.dirname(__FILE__), %w[.. lib andi]))
+
+def help message = nil
+  puts message + "\\\n-----------------------------------\\\n" unless message.nil?
+  puts %~
+  Usage:
+      andi <projectName> <MainActivity> [path=./]
+   
+  The project name must be suitable for a Java package name. 
+  
+  Allowed characters are: a-z A-Z 0-9 _
+  
+  ~
+end
+
+# Hacky, since there is exactly one action for this whole gem.
+# Move this stuff into libs when there are *two* actions for this gem.
+
+# TODO
+# Need some config stuff to remove the hard-coded package name
+# Need some way to define more options without having to remember what they can be.
+# Maybe a series of prompts?
+
+(help; exit) unless ARGV.size > 1
+
+project_name = ARGV.shift.strip
+main_activity = ARGV.shift.strip
+path = ARGV.shift.to_s.strip
+
+path = "." if path.empty?
+path.sub!( /\/$/, '')
+
+cmd = "android create project --package com.neurogami.#{project_name} --activity #{main_activity}  --target 2  --path #{path}/#{project_name} "
+
+puts `#{cmd}`
+
+# EOF
