@@ -1,6 +1,6 @@
 andi
     by James Britt /  Neurogami
-    http://www.neurogmai.com
+    http://www.neurogami.com
 
 == DESCRIPTION:
 
