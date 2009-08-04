@@ -22,7 +22,7 @@ PROJ.name = 'andi'
 PROJ.authors = 'James Britt / Neurogami'
 PROJ.email = 'james@neurogami.com'
 PROJ.url = 'http://github.com/neurogami/andi'
-PROJ.version = Andi::VERSION
+PROJ.version = Neurogami::Andi::VERSION
 PROJ.rubyforge.name = 'andi'
 
 PROJ.spec.opts << '--color'
