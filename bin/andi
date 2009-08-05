@@ -15,15 +15,9 @@ require File.expand_path( File.join(File.dirname(__FILE__), %w[.. lib andi]))
 # Need to add some proper arg handling
 project_name = ARGV.shift.strip
 main_activity = ARGV.shift.strip
-path = ARGV.shift.to_s.strip
+path = ARGV.shift
 
-path = nil if path.empty?
-
-if path
-  Neurogami::Andi.project  project_name, main_activity, path
-else
-  Neurogami::Andi.project  project_name, main_activity
-end
+Neurogami::Andi.project  project_name, main_activity, path
 
 
 # EOF
