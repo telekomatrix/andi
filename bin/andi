@@ -2,22 +2,56 @@
 
 require File.expand_path( File.join(File.dirname(__FILE__), %w[.. lib andi]))
 
+require 'rubygems'
+require 'pp'
+require 'user-choices'
+
+# (Neurogami::Andi.help; exit) unless ARGV.size > 1
 
 
-# TODO
-# Need some config stuff to remove the hard-coded package name
-# Need some way to define more options without having to remember what they can be.
-# Maybe a series of prompts?
+## Need to add some proper arg handling
+#project_name = ARGV.shift.strip
+#main_activity = ARGV.shift.strip
+#path = ARGV.shift
 
-(Neurogami::Andi.help; exit) unless ARGV.size > 1
+#Neurogami::Andi.project  project_name, main_activity, path
+
+class AndiChoices < UserChoices::Command
+  include UserChoices 
+
+  def add_sources builder
+    warn "add_sources starts with @user_choices = #{@user_choices.pretty_inspect}"
+    builder.add_source(YamlConfigFileSource, :from_file, "andi.yaml") 
+    # I get funky errors unless this is here: 
+    builder.add_source(CommandLineSource, :usage, "Usage: ruby #{$0} [options] ")
+    # Seems there must be a source to handle the CLI ?
+
+    #builder.add_source(EnvironmentSource, :with_prefix, "myprog_")
+  end
 
 
-# Need to add some proper arg handling
-project_name = ARGV.shift.strip
-main_activity = ARGV.shift.strip
-path = ARGV.shift
+  def add_choices builder
+    warn "add_choices starts with @user_choices = #{@user_choices.pretty_inspect}"
+    builder.add_choice( :target, :type=>:integer) { | command_line |
+      command_line.uses_option("-t", "--target INT", "Android target.")
+    }
 
-Neurogami::Andi.project  project_name, main_activity, path
+    builder.add_choice(:base_package, :type=>:string ) { | command_line |
+      command_line.uses_option("-b", "--base_package BASE_PACKAGE", "Base package name (e.g. com.neurogami).")
+    }
 
+  end
 
-# EOF
+  def execute
+    puts format("Target %s be used.", @user_choices[:target] )
+    puts "The base package is  #{@user_choices[:base_package]} ."
+    pp @user_choices
+
+  end
+end
+
+S4tUtils.with_pleasant_exceptions do
+
+  AndiChoices.new.execute
+end
+

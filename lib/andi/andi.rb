@@ -14,12 +14,20 @@ module Neurogami
     end
 
 
-    def self.project project_name , main_activity , path='.' 
+    # Useful values: 
+    #   :base_package (i.e. com.neurogami )
+    #   :main_activity
+    #   :target
+    #   :output_path
+    #   :project_name
+    def self.project options_hash
 
-      path = "." if path.empty?
-      path.sub!( /\/$/, '')
-
-      cmd = "android create project --package com.neurogami.#{project_name} --activity #{main_activity}  --target 2  --path #{path}/#{project_name} "
+      options_hash[:output_path] = "." if options_hash[:output_path].empty?
+      options_hash[:output_path].sub!( /\/$/, '')
+      #options_hash[:main_activity]
+      #options_hash[:target]
+      # 
+      cmd = "android create project --package #{options_hash[:base_package]}.#{project_name} --activity #{options_hash[:main_activity]}  --target #{options_hash[:target]}  --path #{options_hash[:output_path]}/#{project_name} "
 
       puts `#{cmd}`
     end

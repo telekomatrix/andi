@@ -1,6 +1,14 @@
 # Some notes on stuff
 
 
+## Tools
+
+http://trollop.rubyforge.org/
+
+http://user-choices.rubyforge.org/rdoc/
+
+http://stackoverflow.com/questions/897630/really-cheap-command-line-option-parsing-in-ruby
+
 Assumptions 
 
 * The path to the android SDK bin dir is part of PATH
