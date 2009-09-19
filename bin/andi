@@ -20,38 +20,50 @@ class AndiChoices < UserChoices::Command
   include UserChoices 
 
   def add_sources builder
-    warn "add_sources starts with @user_choices = #{@user_choices.pretty_inspect}"
-    builder.add_source(YamlConfigFileSource, :from_file, "andi.yaml") 
-    # I get funky errors unless this is here: 
+    # Seems that order matter.  What comes first has higher precedence
     builder.add_source(CommandLineSource, :usage, "Usage: ruby #{$0} [options] ")
-    # Seems there must be a source to handle the CLI ?
-
-    #builder.add_source(EnvironmentSource, :with_prefix, "myprog_")
+    builder.add_source(EnvironmentSource, :with_prefix, "andi_")
+    builder.add_source(YamlConfigFileSource, :from_file, "andi.yaml") 
   end
 
 
   def add_choices builder
-    warn "add_choices starts with @user_choices = #{@user_choices.pretty_inspect}"
-    builder.add_choice( :target, :type=>:integer) { | command_line |
-      command_line.uses_option("-t", "--target INT", "Android target.")
+    # This sets up help for -h
+    
+    default_target = 3
+    default_package_name = 'com.neurogami'
+
+    builder.add_choice( :target, :type=>:integer, :default => default_target) { | command_line |
+      command_line.uses_option("-t", "--target INT", 
+             "Android target. Default is #{default_target}")
     }
 
-    builder.add_choice(:base_package, :type=>:string ) { | command_line |
-      command_line.uses_option("-b", "--base_package BASE_PACKAGE", "Base package name (e.g. com.neurogami).")
+    builder.add_choice(:base_package, :type=>:string , :default=>default_package_name) { | command_line |
+      command_line.uses_option("-b", "--base_package BASE_PACKAGE", 
+                   "Base package name (e.g. com.neurogami). Default is #{default_package_name}")
     }
 
+
+    builder.add_choice(:project_name, :type=>:string  ) { | command_line |
+      command_line.uses_option("-p", "--project_name PROJECTNAME", 
+                   "Project name (e.g. MyCoolApp). Required.")
+    }
+
+    
   end
-
+ 
   def execute
-    puts format("Target %s be used.", @user_choices[:target] )
+    puts "Target #{@user_choices[:target]} will be used." 
     puts "The base package is  #{@user_choices[:base_package]} ."
-    pp @user_choices
-
+    if Neurogami::Andi.valid_options?  @user_choices
+      Neurogami::Andi.project @user_choices
+    else
+      warn "\nThere were one or more problems with your parameters: \n\t#{Neurogami::Andi.errors.join("\n\t")}\n"
+    end
   end
 end
 
 S4tUtils.with_pleasant_exceptions do
-
   AndiChoices.new.execute
 end
 
