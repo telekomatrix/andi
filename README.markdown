@@ -1,28 +1,63 @@
-andi
-    by James Britt /  Neurogami
-    http://www.neurogami.com
+# andi
+  
+by James Britt /  Neurogami
 
-== DESCRIPTION:
+[www.neurogami.com](http://www.neurogami.com)
+
+## DESCRIPTION:
 
 Helper app to create Android project stuff
 
-== FEATURES/PROBLEMS:
+## FEATURES/PROBLEMS:
 
-* Assorted nice things
+Still evolving, but core behavior is to aid in creating project files
 
-== SYNOPSIS:
+##  SYNOPSIS:
 
-  stuff
+Whenever this becomes a gem:
 
-== REQUIREMENTS:
+    sudo gem i Neurogami-andi
 
-* REPAIRME (list of requirements)
+Create `andi.yaml` in your $HOME dir.  This is the config file for your prefered default values:
 
-== INSTALL:
+    target: 3
+    base_package: com.neurogami
+    main_activity: MainAction
 
-* REPAIRME (sudo gem install, anything else)
+Run the help option:
 
-== LICENSE:
+      $ andi -h
+      Usage: ruby /usr/local/bin/andi [options] 
+
+      Options:
+          -t, --target INT                 Android target. Default is 3
+          -b, --base_package BASE_PACKAGE  Base package name (e.g. com.neurogami). Default is com.neurogami
+          -p, --project_name PROJECTNAME   Project name (e.g. MyCoolApp). Required.
+          -?, -h, --help                   Show this message.
+
+If you've sufficient defaults then you need only pass the name of the project; you can override the defaults on the command likne if you like.
+
+     $ andi -p myCoolApp
+
+     $ andi -p myCoolApp -t 1
+
+     $ andi -p myCoolApp -t 2 -b com.example
+
+
+
+##  REQUIREMENTS:
+
+* The User-Choices gem
+
+##  INSTALL:
+
+Whenever this becomes a gem:
+
+    sudo gem i Neurogami-andi
+
+or grab from git.
+
+##  LICENSE:
 
 (The MIT License)
 
