@@ -30,8 +30,9 @@ class AndiChoices < UserChoices::Command
   def add_choices builder
     # This sets up help for -h
     
-    default_target = 3
+    default_target = 4
     default_package_name = 'com.neurogami'
+    default_main_activity = 'MainAction'
 
     builder.add_choice( :target, :type=>:integer, :default => default_target) { | command_line |
       command_line.uses_option("-t", "--target INT", 
@@ -41,6 +42,12 @@ class AndiChoices < UserChoices::Command
     builder.add_choice(:base_package, :type=>:string , :default=>default_package_name) { | command_line |
       command_line.uses_option("-b", "--base_package BASE_PACKAGE", 
                    "Base package name (e.g. com.neurogami). Default is #{default_package_name}")
+    }
+
+    
+    builder.add_choice(:main_activity, :type=>:string , :default => default_main_activity ) { | command_line |
+      command_line.uses_option("-m", "--main_activity MAINACTIVITY", 
+                   "Name for main activity  (e.g. MainActivity). Default is #{default_main_activity}")
     }
 
 
@@ -58,7 +65,7 @@ class AndiChoices < UserChoices::Command
     if Neurogami::Andi.valid_options?  @user_choices
       Neurogami::Andi.project @user_choices
     else
-      warn "\nThere were one or more problems with your parameters: \n\t#{Neurogami::Andi.errors.join("\n\t")}\n"
+      warn "\nThere were one or more problems with your parameters: \n\t#{Neurogami::Andi.errors.join("\n\t")}\n\nRun 'andi -h' for a list of options."
     end
   end
 end

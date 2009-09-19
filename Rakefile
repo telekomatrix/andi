@@ -26,6 +26,13 @@ PROJ.version = Neurogami::Andi::VERSION
 PROJ.rubyforge.name = 'there-is-no-rubyforge-project'
 PROJ.dependencies = ['user-choices']
 PROJ.exclude = %w(.git pkg )
+PROJ.readme_file = 'README.markdown'
+PROJ.summary = 'Tool for android development'
 PROJ.spec.opts << '--color'
 
+
+desc "Open GitHub project page"
+task :gh do
+  warn `firefox http://github.com/Neurogami/andi & `
+end
 # EOF
