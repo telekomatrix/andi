@@ -11,8 +11,10 @@ Gem::Specification.new do |s|
   s.description = %q{}
   s.email = %q{james@neurogami.com}
   s.executables = ["andi"]
-  s.extra_rdoc_files = ["History.txt", "__WE_ARE_USING_TICGIT_HERE.txt", "bin/andi"]
-  s.files = [".ghcache/issues.yaml", ".ghissues", "History.txt", "NOTES.md", "README.markdown", "Rakefile", "__WE_ARE_USING_TICGIT_HERE.txt", "bin/andi", "lib/andi.rb", "lib/andi/andi.rb", "spec/andi_spec.rb", "spec/spec_helper.rb", "test/test_andi.rb"]
+  s.extra_rdoc_files = ["History.txt",  "bin/andi"]
+  s.files = [ "History.txt", "NOTES.md", "README.markdown",
+         "Rakefile",  "bin/andi", "lib/andi.rb", "lib/andi/andi.rb", 
+         "spec/andi_spec.rb", "spec/spec_helper.rb", "test/test_andi.rb"]
   s.homepage = %q{http://github.com/neurogami/andi}
   s.rdoc_options = ["--main", "README.markdown"]
   s.require_paths = ["lib"]
