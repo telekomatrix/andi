@@ -35,4 +35,16 @@ desc "Open GitHub project page"
 task :gh do
   warn `firefox http://github.com/Neurogami/andi & `
 end
+
+GEMS_DIR =  "/var/www/vhosts/neurogami.com/httpdocs/gems"
+desc "Upload gem to ng"
+task "upload-gem" do
+  Dir[ "./pkg/*"].each do |g|
+        next unless g =~ /\.gem$/
+
+        cmd = "scp -v #{g} james_ng@neurogami.com:#{GEMS_DIR}/"
+        puts `#{cmd}`
+
+  end
+end
 # EOF
