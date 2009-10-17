@@ -2,17 +2,17 @@
 
 Gem::Specification.new do |s|
   s.name = %q{andi}
-  s.version = "0.1.4"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Britt / Neurogami"]
-  s.date = %q{2009-09-19}
+  s.date = %q{2009-10-17}
   s.default_executable = %q{andi}
   s.description = %q{}
   s.email = %q{james@neurogami.com}
   s.executables = ["andi"]
   s.extra_rdoc_files = ["History.txt",  "bin/andi"]
-  s.files = [ "History.txt", "NOTES.md", "README.markdown",
+  s.files = [ "History.txt", "README.markdown",
          "Rakefile",  "bin/andi", "lib/andi.rb", "lib/andi/andi.rb", 
          "spec/andi_spec.rb", "spec/spec_helper.rb", "test/test_andi.rb"]
   s.homepage = %q{http://github.com/neurogami/andi}

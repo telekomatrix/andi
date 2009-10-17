@@ -41,19 +41,19 @@ class AndiChoices < UserChoices::Command
 
     builder.add_choice(:base_package, :type=>:string , :default=>default_package_name) { | command_line |
       command_line.uses_option("-b", "--base_package BASE_PACKAGE", 
-                   "Base package name (e.g. com.neurogami). Default is #{default_package_name}")
+             "Base package name (e.g. com.neurogami). Default is #{default_package_name}")
     }
 
     
     builder.add_choice(:main_activity, :type=>:string , :default => default_main_activity ) { | command_line |
       command_line.uses_option("-m", "--main_activity MAINACTIVITY", 
-                   "Name for main activity  (e.g. MainActivity). Default is #{default_main_activity}")
+              "Name for main activity  (e.g. MainActivity). Default is #{default_main_activity}")
     }
 
 
     builder.add_choice(:project_name, :type=>:string  ) { | command_line |
       command_line.uses_option("-p", "--project_name PROJECTNAME", 
-                   "Project name (e.g. MyCoolApp). Required.")
+              "Project name (e.g. MyCoolApp). Required.")
     }
 
     

@@ -57,10 +57,20 @@ module Neurogami
 
     def self.rakefile options_hash
       %~
+require 'fileutils'
+require 'yaml'
+
+
+ANDI_CONF = File.expand_path(File.dirname(__FILE__) + '/.andi')
+
+PACKAGE_NAME = '#{options_hash[:base_package]}.#{options_hash[:project_name]}'
+PROJ_NAME = '#{options_hash[:project_name]}'
+MAIN_ACTIVITY =  '#{options_hash[:main_activity]}'
+
 namespace :avd do
-  desc 'List AVDs'
+  desc 'List AVDs (buggy; calling the shell script via rake is not working correctly)'
   task :list do
-    warn  `android avd list`
+    puts  `android avd list`
   end
 end
 
@@ -68,42 +78,61 @@ end
 
 namespace :app do
 
+
+  desc "Sign the app"
+  task :sign do 
+    puts "Run \n\tjarsigner -verbose -keystore default.keystore bin/\#{PROJ_NAME}.apk defaultkey"
+    sh "jarsigner -verbose -keystore default.keystore bin/\#{PROJ_NAME}.apk defaultkey"
+  end
+
+  desc "Make a keystore thing"
+  task 'make-key' do
+     puts "Run this, with values of your chosing:\n\t keytool -genkey -v -keystore default.keystore -alias defaultkey -keyalg RSA -validity 10000"
+  end
+
+
+  desc "zipalign"
+  task :zipalign do
+   puts "  zipalign  -f -v  4 bin/\#{PROJ_NAME}.apk   bin/\#{PROJ_NAME}-signed.apk"
+  end
+
   desc "uninstall the app"
   task :uninstall do
-  warn ` adb shell pm uninstall -k  #{options_hash[:base_package]}.#{options_hash[:project_name]}`
+    puts ` adb shell pm uninstall -k  \#{PACKAGE_NAME}`
   end
 
   desc 'Compile debug version'
   task :debug do
-    warn `ant debug`
+    puts `ant debug`
   end
 
-  desc 'Compile release version'
-  task :release do
-    warn `ant release`
+  desc 'Re-compile and re-install  debug version'
+  task 'debug-reinstall' => [:debug, :uninstall , :'debug-install'] do
   end
 
 
   desc 'Install debug version'
-  task 'install-debug' do
-    warn `adb install ./bin/#{options_hash[:main_activity]}-debug.apk `
+  task 'debug-install' => :uninstall  do
+    puts `adb install ./bin/\#{MAIN_ACTIVITY}-debug.apk `
   end
-  
-      
+
+
+  desc 'Compile release version'
+  task :release do
+    puts `ant release`
+    puts `mv ./bin/\#{MAIN_ACTIVITY}-unsigned.apk   ./bin/\#{PROJ_NAME}.apk `
+  end
+
+
   desc 'Install release version'
-  task 'install-release' do
-    warn `adb install ./bin/#{options_hash[:main_activity]}-unsigned.apk `
+  task 'release-install' do
+    puts `adb install ./bin/\#{PROJ_NAME}.apk `
   end
 
+  desc 'Install release version'
+  task 'release-reinstall' => [:uninstall, :release, :sign, 'release-install']
 
-  desc 'Re-compile and re-install  debug version'
-    task 'debug-reinstall' => [:debug, :uninstall , :'debug-install'] do
-  end
-
-
-  desc 'Re-compile and re-install release version'
-   task 'debug-reinstall' => [:release, :uninstall , :'release-install'] do
-  end
+end
 
 
 def save_prefs options
@@ -119,7 +148,6 @@ def load_prefs
 
 end
 
-
 namespace :avd do
 
   desc "Run emulator with avd"
@@ -129,7 +157,7 @@ namespace :avd do
     andi_prefs[:avd] = ENV['AVD'] if ENV['AVD'] 
     save_prefs andi_prefs 
     Thread.new do 
-      puts `emulator  -avd #{andi_prefs[:avd]} &`
+      puts `emulator -avd \#{andi_prefs[:avd]} -sdcard ../sdcard1.iso &`
     end
   end
 
@@ -137,14 +165,49 @@ namespace :avd do
   task :list do
     sh %{ android list avd } do |ok, res|
       if ! ok
-        puts "Problems !  (status = #{res.exitstatus})"
+        puts "Problems !  (status = \#{res.exitstatus})"
       end
     end
   end
 end
-      
-  
-end ~
+
+namespace :res do
+
+  desc 'basic layout XML'
+  task :layout do
+    File.open( "res/layout/\#{Time.now.to_i.to_s}.xml", 'w') { |f| f.puts layout_xml  }
+  end
+end
+
+namespace :dev do
+  desc 'Verify AndroidManifest.xml'
+  task :xmlcheck do
+    require 'rexml/document'
+    doc = REXML::Document.new(IO.read('AndroidManifest.xml'))
+    puts doc.to_s
+  end
+end
+
+
+def layout_xml
+%|<?xml version="1.0" encoding="utf-8"?>
+<!-- http://developer.android.com/guide/topics/ui/declaring-layout.html -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent" 
+              android:layout_height="fill_parent" 
+              android:orientation="vertical" >
+    <TextView android:id="@+id/text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Hello, I am a TextView" />
+    <Button android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hello, I am a Button" />
+</LinearLayout>
+  |
+end
+ ~
     end
   end
 end 
