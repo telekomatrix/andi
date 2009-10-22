@@ -8,6 +8,8 @@ module Neurogami
     }
 
 
+    REQUIRED_VALUES_EXCLUSIONS = [ :generate ]
+
     # Need this?
     def self.help message = nil
       puts message + "\\\n-----------------------------------\\\n" unless message.nil?
@@ -26,6 +28,10 @@ module Neurogami
 
     def self.valid_options?  options_hash
       @@errors = []
+      options_hash.keys.each do |k|
+        return true if REQUIRED_VALUES_EXCLUSIONS.include?(k)   
+      end
+
       REQUIRED_VALUES_ERROR_MSGS.each do |val, msg|
         @@errors << msg unless options_hash[val]
       end
@@ -40,6 +46,11 @@ module Neurogami
     #   :output_path
     #   :project_name
     def self.project options_hash
+      @@current_options = options_hash
+      options_hash.keys.each do |k|
+        # Need to still find a way to pass off derived options values since they are useful ...
+        (send( k, options_hash[k]); return ) if REQUIRED_VALUES_EXCLUSIONS.include?(k)
+      end
 
       options_hash[:output_path] = "." if options_hash[:output_path].to_s.empty?
       options_hash[:output_path].sub!( /\/$/, '')
@@ -55,7 +66,25 @@ module Neurogami
 
 
 
-    def self.rakefile options_hash
+    def self.generate template_name
+      template_map  = {
+         'Rakefile' => :rakefile,
+         'rakefile' => :rakefile
+      }
+
+      template_map.each do |f, m|
+       if template_name == f
+         s = send(m)
+         File.open( f, 'wb'){ |f| f.puts s}
+         return
+       end
+      end
+      # Not sure how best to do this ...
+      s = send template
+      File.open( )
+    end
+
+    def self.rakefile options_hash = @@current_options || { :base_package => "FIXME", :project_name => 'FIXME', :main_activity => 'FIXME'}
       %~
 require 'fileutils'
 require 'yaml'
@@ -63,9 +92,9 @@ require 'yaml'
 
 ANDI_CONF = File.expand_path(File.dirname(__FILE__) + '/.andi')
 
-PACKAGE_NAME = '#{options_hash[:base_package]}.#{options_hash[:project_name]}'
-PROJ_NAME = '#{options_hash[:project_name]}'
-MAIN_ACTIVITY =  '#{options_hash[:main_activity]}'
+PACKAGE_NAME = '#{options_hash[:base_package] || 'FIXME'  }.#{options_hash[:project_name] || 'FIXME'}'
+PROJ_NAME = '#{options_hash[:project_name] || 'FIXME' }'
+MAIN_ACTIVITY =  '#{options_hash[:main_activity] || 'FIXME'}'
 
 namespace :avd do
   desc 'List AVDs (buggy; calling the shell script via rake is not working correctly)'
@@ -150,46 +179,46 @@ end
 
 namespace :avd do
 
-  desc "Run emulator with avd"
-  task :emu do
-    andi_prefs  = load_prefs
+      desc "Run emulator with avd"
+      task :emu do
+        andi_prefs  = load_prefs
 
-    andi_prefs[:avd] = ENV['AVD'] if ENV['AVD'] 
-    save_prefs andi_prefs 
-    Thread.new do 
-      puts `emulator -avd \#{andi_prefs[:avd]} -sdcard ../sdcard1.iso &`
-    end
-  end
+        andi_prefs[:avd] = ENV['AVD'] if ENV['AVD'] 
+        save_prefs andi_prefs 
+        Thread.new do 
+          puts `emulator -avd \#{andi_prefs[:avd]} -sdcard ../sdcard1.iso &`
+        end
+      end
 
-  desc "List available AVDs"
-  task :list do
-    sh %{ android list avd } do |ok, res|
-      if ! ok
-        puts "Problems !  (status = \#{res.exitstatus})"
+      desc "List available AVDs"
+      task :list do
+        sh %{ android list avd } do |ok, res|
+          if ! ok
+            puts "Problems !  (status = \#{res.exitstatus})"
+          end
+        end
       end
     end
-  end
-end
 
-namespace :res do
+    namespace :res do
 
-  desc 'basic layout XML'
-  task :layout do
-    File.open( "res/layout/\#{Time.now.to_i.to_s}.xml", 'w') { |f| f.puts layout_xml  }
-  end
-end
+      desc 'basic layout XML'
+      task :layout do
+        File.open( "res/layout/\#{Time.now.to_i.to_s}.xml", 'w') { |f| f.puts layout_xml  }
+      end
+    end
 
-namespace :dev do
-  desc 'Verify AndroidManifest.xml'
-  task :xmlcheck do
-    require 'rexml/document'
-    doc = REXML::Document.new(IO.read('AndroidManifest.xml'))
-    puts doc.to_s
-  end
-end
+    namespace :dev do
+      desc 'Verify AndroidManifest.xml'
+      task :xmlcheck do
+        require 'rexml/document'
+        doc = REXML::Document.new(IO.read('AndroidManifest.xml'))
+        puts doc.to_s
+      end
+    end
 
 
-def layout_xml
+    def layout_xml
 %|<?xml version="1.0" encoding="utf-8"?>
 <!-- http://developer.android.com/guide/topics/ui/declaring-layout.html -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -206,8 +235,8 @@ def layout_xml
             android:text="Hello, I am a Button" />
 </LinearLayout>
   |
-end
- ~
     end
+    ~
   end
+end
 end 

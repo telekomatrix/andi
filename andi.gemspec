@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{andi}
-  s.version = "0.2.0"
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Britt / Neurogami"]
-  s.date = %q{2009-10-17}
+  s.date = %q{2009-10-21}
   s.default_executable = %q{andi}
   s.description = %q{}
   s.email = %q{james@neurogami.com}
@@ -35,4 +35,5 @@ Gem::Specification.new do |s|
   else
     s.add_dependency(%q<bones>, [">= 2.5.0"])
   end
+   s.add_dependency('user-choices', '>= 1.1.6')
 end

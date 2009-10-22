@@ -56,7 +56,12 @@ class AndiChoices < UserChoices::Command
               "Project name (e.g. MyCoolApp). Required.")
     }
 
-    
+
+    builder.add_choice(:generate, :type=>:string  ) { | command_line |
+      command_line.uses_option("-g", "--generate TEMPLATE", 
+              "A template generater")
+    }
+
   end
  
   def execute
